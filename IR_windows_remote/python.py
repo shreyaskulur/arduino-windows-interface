@@ -1,9 +1,9 @@
-#dir C:\Python34
+import serial     #To receive serial data from the microcontroller
+import win32api   
+import win32con   #To emulate keyboard input
+import time       #To use time.sleep()
 
-import serial
-import win32api
-import time
-import win32con
+#HEX codes for keyboard keys
 VK_CODE = {'backspace':0x08,
            'tab':0x09,
            'clear':0x0C,
@@ -11,6 +11,7 @@ VK_CODE = {'backspace':0x08,
            'shift':0x10,
            'ctrl':0x11,
            'alt':0x12,
+           'win':0x5B,
            'pause':0x13,
            'caps_lock':0x14,
            'esc':0x1B,
@@ -151,22 +152,91 @@ VK_CODE = {'backspace':0x08,
            "'":0xDE}
 
 
-uno = serial.Serial(2,57600)
+uno = serial.Serial(2,57600) #begin serial communication at 57600 baud rate
+
+#Keep repeating below code forever
 while True:
-    data = uno.readline()
-    if data[0]==ord('v'):
-        print (data)
-        volume=float(uno.readline())
+    data = uno.readline() #read until \n is encountered from the serial device
+
+    if data[0]==ord('v'): #check if the 1st letter is v to check if the code received was volume
+        print (data)          
+        volume=float(uno.readline()) #receive the next line with the volume data
         print(volume)
-        if volume == 0:
+
+        if volume == 0: # activate mute, use volume+ or volume- to restore audio
             win32api.keybd_event(VK_CODE['volume_mute'],0 ,0 ,0)
             time.sleep(.05)
             win32api.keybd_event(VK_CODE['volume_mute'],0 ,win32con.KEYEVENTF_KEYUP ,0)
-        elif volume > 5:
+
+        elif volume > 5: #increase volume
             win32api.keybd_event(VK_CODE['volume_up'],0 ,0 ,0)
             time.sleep(.05)
             win32api.keybd_event(VK_CODE['volume_up'],0 ,win32con.KEYEVENTF_KEYUP ,0)
-        elif volume < 5:
+
+        elif volume < 5: #decrease volume
             win32api.keybd_event(VK_CODE['volume_down'],0 ,0 ,0)
             time.sleep(.05)
             win32api.keybd_event(VK_CODE['volume_down'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+
+    elif data[0]==ord('n'): #check if the 1st letter is n to check if the code received was navigation
+         print(data)
+         navigation=float(uno.readline())
+         print(navigation) #receive the next line with the navigation data
+         
+         if navigation==0: #emulate up arrow key
+            win32api.keybd_event(VK_CODE['up_arrow'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['up_arrow'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==1: #emulate down arrow key
+            win32api.keybd_event(VK_CODE['down_arrow'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['down_arrow'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==2: #emulate left arrow key
+            win32api.keybd_event(VK_CODE['left_arrow'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['left_arrow'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==3: #emulate right arrow key
+            win32api.keybd_event(VK_CODE['right_arrow'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['right_arrow'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==4: #emulate enter key
+            win32api.keybd_event(VK_CODE['enter'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['enter'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==5: #emulate alt press
+            win32api.keybd_event(VK_CODE['alt'],0 ,0 ,0)
+            
+         elif navigation==6: #emulate tab key
+            win32api.keybd_event(VK_CODE['tab'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['tab'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==7: #revert alt press
+            win32api.keybd_event(VK_CODE['alt'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==8: #emulate win + d
+            win32api.keybd_event(VK_CODE['win'],0 ,0 ,0)
+            win32api.keybd_event(VK_CODE['d'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['d'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            win32api.keybd_event(VK_CODE['win'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==9: #emulate backspace
+            win32api.keybd_event(VK_CODE['backspace'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['backspace'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            
+         elif navigation==10: #emulate alt + F4
+            win32api.keybd_event(VK_CODE['alt'],0 ,0 ,0)
+            win32api.keybd_event(VK_CODE['F4'],0 ,0 ,0)
+            time.sleep(.05)
+            win32api.keybd_event(VK_CODE['F4'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+            win32api.keybd_event(VK_CODE['alt'],0 ,win32con.KEYEVENTF_KEYUP ,0)
+             
+
+            
